@@ -13,35 +13,39 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	// Carrega variáveis do .env
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("⚠️  Aviso: arquivo .env não carregado (usando variáveis de ambiente)")
-	}
+	// Tenta carregar .env (ignora erro se não existir, comum em produção)
+	_ = godotenv.Load()
 
 	env := os.Getenv("ENVIRONMENT")
-	var dsn string
+	if env == "" {
+		env = "development" // fallback se não for definido
+		log.Println("⚠️  ENVIRONMENT não definido, assumindo 'development'")
+	} else {
+		log.Println("🌍 Ambiente ativo:", env)
+	}
 
+	var dsn string
 	switch env {
 	case "test":
 		dsn = os.Getenv("DATABASE_URL_TEST")
 	case "production":
 		dsn = os.Getenv("DATABASE_URL_PRODUCTION")
-	default:
+	default: // development
 		dsn = os.Getenv("DATABASE_URL_DEVELOPMENT")
 	}
 
 	if dsn == "" {
-		log.Fatal("❌ DATABASE_URL não encontrada para o ambiente: ", env)
+		log.Fatalf("❌ DATABASE_URL não encontrada para o ambiente '%s'", env)
 	}
 
 	// Conecta ao PostgreSQL
+	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("❌ Falha ao conectar no banco de dados:", err)
 	}
 
-	// Migração do modelo
+	// Migração
 	if err := DB.AutoMigrate(&models.User{}); err != nil {
 		log.Fatal("❌ Falha ao migrar modelo User:", err)
 	}
