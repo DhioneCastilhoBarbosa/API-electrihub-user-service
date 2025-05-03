@@ -1,27 +1,37 @@
 package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-// Estrutura do Usuário
 type User struct {
-	ID       string `json:"id" gorm:"type:text;primaryKey"`
-	Name     string `json:"name"`
-	Email    string `json:"email" gorm:"unique"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+	ID         string    `json:"id" gorm:"type:text;primaryKey"`
+	Name       string    `json:"name"`
+	Email      string    `json:"email" gorm:"unique"`
+	Password   string    `json:"password"`
+	Phone      string    `json:"phone"`
+	CPF        string    `json:"cpf"`
+	TipePerson string    `json:"type_person"`
+	Address    string    `json:"address"`
+	CEP        string    `json:"cep"`
+	BirthDate  string    `json:"birth_date"`
+	Reference  string    `json:"reference"`
+	AceptTerms bool      `json:"accept_terms"`
+	Role       string    `json:"role"`
+	Authorized bool      `json:"authorized" gorm:"default:false"`
+	CreatedAt  time.Time `json:"-"`
+	UpdatedAt  time.Time `json:"-"`
 }
 
-// Antes de criar um usuário, gera um UUID automaticamente
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID = uuid.New().String()
 	return
 }
 
-// Hash da senha antes de salvar no banco
 func (u *User) HashPassword() error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -31,7 +41,6 @@ func (u *User) HashPassword() error {
 	return nil
 }
 
-// Verifica se a senha fornecida é igual à senha armazenada
 func (u *User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
