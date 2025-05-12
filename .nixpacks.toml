@@ -1,0 +1,8 @@
+[phases.setup]
+nixpkgsArchive = "https://github.com/NixOS/nixpkgs/archive/nixos-23.11.tar.gz"
+
+[phases.build]
+cmds = ["go build -o out ./cmd/server"]
+
+[start]
+cmd = "./out"
