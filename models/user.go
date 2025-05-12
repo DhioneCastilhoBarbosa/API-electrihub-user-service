@@ -9,22 +9,26 @@ import (
 )
 
 type User struct {
-	ID         string    `json:"id" gorm:"type:text;primaryKey"`
-	Name       string    `json:"name"`
-	Email      string    `json:"email" gorm:"unique"`
-	Password   string    `json:"password"`
-	Phone      string    `json:"phone"`
-	CPF        string    `json:"cpf"`
-	TipePerson string    `json:"type_person"`
-	Address    string    `json:"address"`
-	CEP        string    `json:"cep"`
-	BirthDate  string    `json:"birth_date"`
-	Reference  string    `json:"reference"`
-	AceptTerms bool      `json:"accept_terms"`
-	Role       string    `json:"role"`
-	Authorized bool      `json:"authorized" gorm:"default:false"`
-	CreatedAt  time.Time `json:"-"`
-	UpdatedAt  time.Time `json:"-"`
+	ID           string    `json:"id" gorm:"type:text;primaryKey"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email" gorm:"unique"`
+	Password     string    `json:"password"`
+	Phone        string    `json:"phone"`
+	CPF          string    `json:"cpf"`
+	Street       string    `json:"street"`
+	Number       string    `json:"number"`
+	Neighborhood string    `json:"neighborhood"`
+	City         string    `json:"city"`
+	State        string    `json:"state"`
+	Complement   string    `json:"complement"`
+	CEP          string    `json:"cep"`
+	BirthDate    string    `json:"birth_date"`
+	Reference    string    `json:"reference"`
+	AceptTerms   bool      `json:"accept_terms"`
+	Role         string    `json:"role"`
+	Authorized   bool      `json:"authorized" gorm:"default:false"`
+	CreatedAt    time.Time `json:"-"`
+	UpdatedAt    time.Time `json:"-"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {

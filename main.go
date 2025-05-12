@@ -13,17 +13,22 @@ import (
 )
 
 type UserResponse struct {
-	ID         string `json:"id"`
-	Name       string `json:"username"`
-	Email      string `json:"email"`
-	Role       string `json:"role"`
-	Phone      string `json:"phone"`
-	CPF        string `json:"cpf"`
-	Address    string `json:"address"`
-	CEP        string `json:"cep"`
-	BirthDate  string `json:"birth_date"`
-	Reference  string `json:"reference"`
-	AceptTerms bool   `json:"accept_terms"`
+	ID           string `json:"id"`
+	Name         string `json:"username"`
+	Email        string `json:"email"`
+	Role         string `json:"role"`
+	Phone        string `json:"phone"`
+	CPF          string `json:"cpf"`
+	Street       string `json:"street"`
+	Number       string `json:"number"`
+	Neighborhood string `json:"neighborhood"`
+	City         string `json:"city"`
+	State        string `json:"state"`
+	Complement   string `json:"complement"`
+	CEP          string `json:"cep"`
+	BirthDate    string `json:"birth_date"`
+	Reference    string `json:"reference"`
+	AceptTerms   bool   `json:"accept_terms"`
 }
 
 func main() {
@@ -134,17 +139,22 @@ func main() {
 		var userResponses []UserResponse
 		for _, user := range users {
 			userResponses = append(userResponses, UserResponse{
-				ID:         user.ID,
-				Name:       user.Name,
-				Email:      user.Email,
-				Phone:      user.Phone,
-				CPF:        user.CPF,
-				Address:    user.Address,
-				CEP:        user.CEP,
-				BirthDate:  user.BirthDate,
-				Reference:  user.Reference,
-				AceptTerms: user.AceptTerms,
-				Role:       user.Role,
+				ID:           user.ID,
+				Name:         user.Name,
+				Email:        user.Email,
+				Phone:        user.Phone,
+				CPF:          user.CPF,
+				Street:       user.Street,
+				Number:       user.Number,
+				Neighborhood: user.Neighborhood,
+				City:         user.City,
+				State:        user.State,
+				Complement:   user.Complement,
+				CEP:          user.CEP,
+				BirthDate:    user.BirthDate,
+				Reference:    user.Reference,
+				AceptTerms:   user.AceptTerms,
+				Role:         user.Role,
 			})
 		}
 
