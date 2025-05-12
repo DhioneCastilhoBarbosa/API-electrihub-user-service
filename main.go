@@ -10,7 +10,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type UserResponse struct {
@@ -112,17 +111,19 @@ func main() {
 		})
 	})
 
-	// Lista todos os usuários
-	// Lista todos os usuários ou filtra por role
+	// Lista todos os usuários, ou filtra por role e/ou ID
 	r.GET("/user/list", middlewares.AuthMiddleware(), func(c *gin.Context) {
 		role := c.Query("role")
+		id := c.Query("id") // novo filtro por ID
 		var users []models.User
-		var query *gorm.DB
+		query := database.DB
+
+		if id != "" {
+			query = query.Where("id = ?", id)
+		}
 
 		if role != "" {
-			query = database.DB.Where("role = ?", role)
-		} else {
-			query = database.DB
+			query = query.Where("role = ?", role)
 		}
 
 		if err := query.Find(&users).Error; err != nil {
