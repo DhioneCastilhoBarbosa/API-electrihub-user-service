@@ -27,6 +27,7 @@ type User struct {
 	AceptTerms   bool      `json:"accept_terms"`
 	Role         string    `json:"role"`
 	Authorized   bool      `json:"authorized" gorm:"default:false"`
+	Photo        string    `json:"photo"`
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
 }

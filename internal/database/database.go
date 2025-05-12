@@ -3,7 +3,7 @@ package database
 import (
 	"log"
 	"os"
-	"user-service/models"
+	"user-service/internal/user/models"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
