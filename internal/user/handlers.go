@@ -259,6 +259,9 @@ func UpdateUserPhoto(c *gin.Context) {
 	fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), filepath.Base(file.Filename))
 	savePath := filepath.Join(uploadDir, fileName)
 
+	// 🟢 Adicionado log para verificar o caminho do arquivo
+	fmt.Println("Salvando em:", savePath)
+
 	// Salva o arquivo no disco
 	if err := c.SaveUploadedFile(file, savePath); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao salvar imagem"})
