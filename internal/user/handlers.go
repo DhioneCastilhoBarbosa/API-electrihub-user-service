@@ -22,6 +22,8 @@ type UserResponse struct {
 	Role         string `json:"role"`
 	Phone        string `json:"phone"`
 	CPF          string `json:"cpf"`
+	CNPJ         string `json:"cnpj"`
+	CompanyName  string `json:"company_name"`
 	Street       string `json:"street"`
 	Number       string `json:"number"`
 	Neighborhood string `json:"neighborhood"`
@@ -127,6 +129,8 @@ func ListUsers(c *gin.Context) {
 			Email:        user.Email,
 			Phone:        user.Phone,
 			CPF:          user.CPF,
+			CNPJ:         user.CNPJ,
+			CompanyName:  user.CompanyName,
 			Street:       user.Street,
 			Number:       user.Number,
 			Neighborhood: user.Neighborhood,

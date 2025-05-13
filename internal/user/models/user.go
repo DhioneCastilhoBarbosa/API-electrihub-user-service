@@ -15,6 +15,8 @@ type User struct {
 	Password     string    `json:"password"`
 	Phone        string    `json:"phone"`
 	CPF          string    `json:"cpf"`
+	CNPJ         string    `json:"cnpj"`
+	CompanyName  string    `json:"company_name"`
 	Street       string    `json:"street"`
 	Number       string    `json:"number"`
 	Neighborhood string    `json:"neighborhood"`
