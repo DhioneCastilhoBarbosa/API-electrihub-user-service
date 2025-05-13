@@ -170,8 +170,7 @@ func UpdatePassword(c *gin.Context) {
 	id := c.Param("id")
 
 	var body struct {
-		CurrentPassword string `json:"current_password"`
-		NewPassword     string `json:"new_password"`
+		NewPassword string `json:"new_password"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
@@ -181,11 +180,6 @@ func UpdatePassword(c *gin.Context) {
 	var user models.User
 	if err := database.DB.Where("id = ?", id).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
-	}
-
-	if !user.CheckPassword(body.CurrentPassword) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect current password"})
 		return
 	}
 
