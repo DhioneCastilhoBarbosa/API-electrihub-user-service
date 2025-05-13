@@ -3,12 +3,13 @@ package user
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"path/filepath"
+	"strings"
 	"time"
 	"user-service/internal/database"
 	"user-service/internal/user/models"
 
+	"user-service/internal/s3helper"
 	"user-service/internal/utils"
 
 	"github.com/gin-gonic/gin"
@@ -248,35 +249,51 @@ func UpdateUserPhoto(c *gin.Context) {
 		return
 	}
 
-	// Garante que a pasta "uploads" exista
-	uploadDir := "uploads"
-	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar diretório"})
+	// Busca usuário no banco
+	var user models.User
+	if err := database.DB.First(&user, "id = ?", id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Usuário não encontrado"})
 		return
 	}
 
-	// Gera nome único para o arquivo
-	fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), filepath.Base(file.Filename))
-	savePath := filepath.Join(uploadDir, fileName)
+	// Se já houver uma foto, deleta ela do S3
+	if user.Photo != "" {
+		// Exemplo: https://bucket.s3.region.amazonaws.com/users/ID_TIMESTAMP.png
+		parts := strings.Split(user.Photo, "/")
+		if len(parts) > 0 {
+			oldKey := strings.Join(parts[len(parts)-2:], "/") // pega os dois últimos: "users/arquivo.png"
+			if err := s3helper.DeleteFileFromS3(oldKey); err != nil {
+				fmt.Println("⚠️ Erro ao deletar arquivo anterior:", err)
+			}
+		}
+	}
 
-	// 🟢 Adicionado log para verificar o caminho do arquivo
-	fmt.Println("Salvando em:", savePath)
-
-	// Salva o arquivo no disco
-	if err := c.SaveUploadedFile(file, savePath); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao salvar imagem"})
+	// Abre o novo arquivo
+	src, err := file.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao abrir imagem"})
 		return
 	}
 
-	// Atualiza o caminho da imagem no banco
-	if err := database.DB.Model(&models.User{}).Where("id = ?", id).
-		Update("photo", savePath).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao atualizar o caminho da imagem"})
+	// Gera o novo nome
+	ext := filepath.Ext(file.Filename)
+	fileName := fmt.Sprintf("users/%s_%d%s", id, time.Now().Unix(), ext)
+
+	// Faz upload para S3
+	url, err := s3helper.UploadFileToS3(src, file, fileName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao fazer upload para S3"})
+		return
+	}
+
+	// Atualiza no banco
+	if err := database.DB.Model(&user).Update("photo", url).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao salvar URL da imagem"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Foto atualizada com sucesso",
-		"photo":   fmt.Sprintf("/%s", savePath),
+		"photo":   url,
 	})
 }

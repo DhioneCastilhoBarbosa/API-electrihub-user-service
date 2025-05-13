@@ -1,12 +1,14 @@
 package main
 
 import (
+	"log"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"user-service/internal/database"
+	"user-service/internal/s3helper"
 	"user-service/internal/user"
 )
 
@@ -21,8 +23,11 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	if err := s3helper.InitS3Helper(); err != nil {
+		log.Fatal("Erro ao iniciar o S3:", err)
+	}
+
 	database.ConnectDatabase()
-	r.Static("/uploads", "./uploads")
 
 	user.RegisterRoutes(r)
 
