@@ -19,7 +19,7 @@ func RegisterRoutes(r *gin.Engine) {
 		group.PUT("/:id", middlewares.AuthMiddleware(), UpdateUser)
 		group.PUT("/:id/photo", middlewares.AuthMiddleware(), UpdateUserPhoto)
 		group.DELETE("/:id", middlewares.AuthMiddleware(), DeleteUser)
-		group.GET("/user/public/installers/nearby", ListNearbyInstallers)
+		group.GET("/public/installers/nearby", ListNearbyInstallers)
 
 	}
 }
