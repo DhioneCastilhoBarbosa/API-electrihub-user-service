@@ -31,6 +31,8 @@ type UserResponse struct {
 	State                 string  `json:"state"`
 	Complement            string  `json:"complement"`
 	CEP                   string  `json:"cep"`
+	Latitude              float64 `json:"latitude"`
+	Longitude             float64 `json:"longitude"`
 	BirthDate             string  `json:"birth_date"`
 	Reference             string  `json:"reference"`
 	AceptTerms            bool    `json:"accept_terms"`
@@ -66,6 +68,31 @@ func RegisterUser(c *gin.Context) {
 		newUser.Authorized = false
 	}
 
+	// Fallback: se latitude ou longitude não foram enviados
+	if (newUser.Latitude == 0 || newUser.Longitude == 0) &&
+		newUser.CEP != "" &&
+		newUser.Street != "" &&
+		newUser.City != "" &&
+		newUser.State != "" {
+
+		// 🧭 Monta endereço completo
+		endereco := fmt.Sprintf("%s %s %s %s %s",
+			newUser.Street,
+			newUser.Number,
+			newUser.CEP,
+			newUser.City,
+			newUser.State,
+		)
+
+		lat, lng, err := utils.BuscarCoordenadas(endereco)
+		if err != nil {
+			fmt.Println("⚠️ Erro ao buscar coordenadas:", err)
+		} else {
+			newUser.Latitude = lat
+			newUser.Longitude = lng
+		}
+	}
+
 	if err := newUser.HashPassword(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
 		return
@@ -77,7 +104,11 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusCreated, gin.H{
+		"message":   "User registered successfully",
+		"latitude":  newUser.Latitude,
+		"longitude": newUser.Longitude,
+	})
 }
 
 func LoginUser(c *gin.Context) {
@@ -154,6 +185,8 @@ func ListUsers(c *gin.Context) {
 			State:                 user.State,
 			Complement:            user.Complement,
 			CEP:                   user.CEP,
+			Latitude:              user.Latitude,
+			Longitude:             user.Longitude,
 			BirthDate:             user.BirthDate,
 			Reference:             user.Reference,
 			AceptTerms:            user.AceptTerms,

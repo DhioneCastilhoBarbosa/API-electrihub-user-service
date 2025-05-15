@@ -24,6 +24,8 @@ type User struct {
 	State                 string    `json:"state"`
 	Complement            string    `json:"complement"`
 	CEP                   string    `json:"cep"`
+	Latitude              float64   `json:"latitude"`
+	Longitude             float64   `json:"longitude"`
 	BirthDate             string    `json:"birth_date"`
 	Reference             string    `json:"reference"`
 	AceptTerms            bool      `json:"accept_terms"`
