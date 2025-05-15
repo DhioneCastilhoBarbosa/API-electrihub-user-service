@@ -11,6 +11,7 @@ func RegisterRoutes(r *gin.Engine) {
 	{
 		group.POST("/register", RegisterUser)
 		group.POST("/login", LoginUser)
+		group.GET("/public/installers", ListPublicInstallers)
 		group.GET("/list", middlewares.AuthMiddleware(), ListUsers)
 		group.GET("/installers/pending", middlewares.AuthMiddleware(), ListPendingInstallers)
 		group.PATCH("/:id/authorize", middlewares.AuthMiddleware(), AuthorizeUser)

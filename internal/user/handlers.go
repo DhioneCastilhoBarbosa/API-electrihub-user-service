@@ -16,25 +16,41 @@ import (
 )
 
 type UserResponse struct {
-	ID           string `json:"id"`
-	Name         string `json:"username"`
-	Email        string `json:"email"`
-	Role         string `json:"role"`
-	Phone        string `json:"phone"`
-	CPF          string `json:"cpf"`
-	CNPJ         string `json:"cnpj"`
-	CompanyName  string `json:"company_name"`
-	Street       string `json:"street"`
-	Number       string `json:"number"`
-	Neighborhood string `json:"neighborhood"`
-	City         string `json:"city"`
-	State        string `json:"state"`
-	Complement   string `json:"complement"`
-	CEP          string `json:"cep"`
-	BirthDate    string `json:"birth_date"`
-	Reference    string `json:"reference"`
-	AceptTerms   bool   `json:"accept_terms"`
-	Photo        string `json:"photo"`
+	ID                    string  `json:"id"`
+	Name                  string  `json:"username"`
+	Email                 string  `json:"email"`
+	Role                  string  `json:"role"`
+	Phone                 string  `json:"phone"`
+	CPF                   string  `json:"cpf"`
+	CNPJ                  string  `json:"cnpj"`
+	CompanyName           string  `json:"company_name"`
+	Street                string  `json:"street"`
+	Number                string  `json:"number"`
+	Neighborhood          string  `json:"neighborhood"`
+	City                  string  `json:"city"`
+	State                 string  `json:"state"`
+	Complement            string  `json:"complement"`
+	CEP                   string  `json:"cep"`
+	BirthDate             string  `json:"birth_date"`
+	Reference             string  `json:"reference"`
+	AceptTerms            bool    `json:"accept_terms"`
+	AverageRating         float64 `json:"average_rating"`
+	TotalServicesAccepted int     `json:"total_services_accepted"`
+	ServicesNotExecuted   int     `json:"services_not_executed"`
+
+	Photo string `json:"photo"`
+}
+
+type UserInstalerResponse struct {
+	ID                    string  `json:"id"`
+	Name                  string  `json:"username"`
+	CompanyName           string  `json:"company_name"`
+	Role                  string  `json:"role"`
+	AverageRating         float64 `json:"average_rating"`
+	TotalServicesAccepted int     `json:"total_services_accepted"`
+	ServicesNotExecuted   int     `json:"services_not_executed"`
+
+	Photo string `json:"photo"`
 }
 
 func RegisterUser(c *gin.Context) {
@@ -124,25 +140,28 @@ func ListUsers(c *gin.Context) {
 	var userResponses []UserResponse
 	for _, user := range users {
 		userResponses = append(userResponses, UserResponse{
-			ID:           user.ID,
-			Name:         user.Name,
-			Email:        user.Email,
-			Phone:        user.Phone,
-			CPF:          user.CPF,
-			CNPJ:         user.CNPJ,
-			CompanyName:  user.CompanyName,
-			Street:       user.Street,
-			Number:       user.Number,
-			Neighborhood: user.Neighborhood,
-			City:         user.City,
-			State:        user.State,
-			Complement:   user.Complement,
-			CEP:          user.CEP,
-			BirthDate:    user.BirthDate,
-			Reference:    user.Reference,
-			AceptTerms:   user.AceptTerms,
-			Role:         user.Role,
-			Photo:        user.Photo,
+			ID:                    user.ID,
+			Name:                  user.Name,
+			Email:                 user.Email,
+			Phone:                 user.Phone,
+			CPF:                   user.CPF,
+			CNPJ:                  user.CNPJ,
+			CompanyName:           user.CompanyName,
+			Street:                user.Street,
+			Number:                user.Number,
+			Neighborhood:          user.Neighborhood,
+			City:                  user.City,
+			State:                 user.State,
+			Complement:            user.Complement,
+			CEP:                   user.CEP,
+			BirthDate:             user.BirthDate,
+			Reference:             user.Reference,
+			AceptTerms:            user.AceptTerms,
+			AverageRating:         user.AverageRating,
+			TotalServicesAccepted: user.TotalServicesAccepted,
+			ServicesNotExecuted:   user.ServicesNotExecuted,
+			Role:                  user.Role,
+			Photo:                 user.Photo,
 		})
 	}
 
@@ -294,4 +313,29 @@ func UpdateUserPhoto(c *gin.Context) {
 		"message": "Foto atualizada com sucesso",
 		"photo":   url,
 	})
+}
+
+func ListPublicInstallers(c *gin.Context) {
+	var users []models.User
+
+	if err := database.DB.Where("role = ?", "instalador").Find(&users).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao listar instaladores"})
+		return
+	}
+
+	var userResponses []UserInstalerResponse
+	for _, user := range users {
+		userResponses = append(userResponses, UserInstalerResponse{
+			ID:                    user.ID,
+			Name:                  user.Name,
+			CompanyName:           user.CompanyName,
+			AverageRating:         user.AverageRating,
+			TotalServicesAccepted: user.TotalServicesAccepted,
+			ServicesNotExecuted:   user.ServicesNotExecuted,
+			Role:                  user.Role,
+			Photo:                 user.Photo,
+		})
+	}
+
+	c.JSON(http.StatusOK, userResponses)
 }
