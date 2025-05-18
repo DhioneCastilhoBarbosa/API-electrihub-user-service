@@ -1,13 +1,14 @@
 package utils
 
 import (
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 // Chave secreta para assinar o token
-var SecretKey = []byte("seu_segredo_super_secreto")
+var SecretKey = []byte(os.Getenv("JWT_SECRET"))
 
 // Claims personalizados para o JWT
 type Claims struct {
