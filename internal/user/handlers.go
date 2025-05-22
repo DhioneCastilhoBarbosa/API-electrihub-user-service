@@ -72,6 +72,7 @@ func RegisterUser(c *gin.Context) {
 	if (newUser.Latitude == 0 || newUser.Longitude == 0) &&
 		newUser.CEP != "" &&
 		newUser.Street != "" &&
+		newUser.Number != "" &&
 		newUser.City != "" &&
 		newUser.State != "" {
 
@@ -83,11 +84,12 @@ func RegisterUser(c *gin.Context) {
 			newUser.City,
 			newUser.State,
 		)
-
+		fmt.Println("Endereço para geolocalização:", endereco)
 		lat, lng, err := utils.BuscarCoordenadas(endereco)
 		if err != nil {
 			fmt.Println("⚠️ Erro ao buscar coordenadas:", err)
 		} else {
+			fmt.Println("📍 Coordenadas encontradas:", lat, lng)
 			newUser.Latitude = lat
 			newUser.Longitude = lng
 		}
