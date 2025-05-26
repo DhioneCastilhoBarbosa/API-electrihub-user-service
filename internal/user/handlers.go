@@ -52,6 +52,7 @@ type UserInstalerResponse struct {
 	TotalServicesAccepted int     `json:"total_services_accepted"`
 	ServicesNotExecuted   int     `json:"services_not_executed"`
 	Phone                 string  `json:"phone"`
+	State                 string  `json:"state"`
 
 	Photo string `json:"photo"`
 }
@@ -373,6 +374,7 @@ func ListPublicInstallers(c *gin.Context) {
 			Role:                  user.Role,
 			Photo:                 user.Photo,
 			Phone:                 user.Phone,
+			State:                 user.State,
 		})
 	}
 
