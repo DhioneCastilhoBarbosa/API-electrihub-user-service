@@ -357,7 +357,8 @@ func UpdateUserPhoto(c *gin.Context) {
 func ListPublicInstallers(c *gin.Context) {
 	var users []models.User
 
-	if err := database.DB.Where("role = ?", "instalador").Find(&users).Error; err != nil {
+	// Filtra usuários com role = "instalador" e authorized = true
+	if err := database.DB.Where("role = ? AND authorized = ?", "instalador", true).Find(&users).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao listar instaladores"})
 		return
 	}
