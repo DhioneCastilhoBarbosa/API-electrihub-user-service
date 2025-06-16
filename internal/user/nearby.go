@@ -34,7 +34,7 @@ func ListNearbyInstallers(c *gin.Context) {
 
 	var users []models.User
 	if err := database.DB.
-		Where("role = ? AND authorized = ?", "instalador", true).
+		Where(&models.User{Role: "instalador", Authorized: true}).
 		Find(&users).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar instaladores"})
 		return
