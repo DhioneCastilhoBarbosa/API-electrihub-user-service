@@ -9,6 +9,7 @@ import (
 	"user-service/internal/database"
 	"user-service/internal/user/models"
 
+	"user-service/internal/email"
 	"user-service/internal/s3helper"
 	"user-service/internal/utils"
 
@@ -108,11 +109,39 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
+	if newUser.Role == "instalador" {
+		go func() {
+			err := email.NotifyNewInstaller(email.InstallerData{
+				Name:         newUser.Name,
+				Email:        newUser.Email,
+				Phone:        newUser.Phone,
+				CPF:          newUser.CPF,
+				CNPJ:         newUser.CNPJ,
+				CompanyName:  newUser.CompanyName,
+				Street:       newUser.Street,
+				Number:       newUser.Number,
+				Neighborhood: newUser.Neighborhood,
+				City:         newUser.City,
+				State:        newUser.State,
+				Complement:   newUser.Complement,
+				CEP:          newUser.CEP,
+				BirthDate:    newUser.BirthDate,
+				Reference:    newUser.Reference,
+			})
+			if err != nil {
+				fmt.Println("⚠️ Erro ao enviar notificação de novo instalador:", err)
+			} else {
+				fmt.Println("✅ Notificação de novo instalador enviada com sucesso")
+			}
+		}()
+	}
+
 	c.JSON(http.StatusCreated, gin.H{
 		"message":   "User registered successfully",
 		"latitude":  newUser.Latitude,
 		"longitude": newUser.Longitude,
 	})
+
 }
 
 func LoginUser(c *gin.Context) {
