@@ -179,6 +179,7 @@ func LoginUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"ID":     user.ID,
 		"name":   user.Name,
+		"company_name": user.CompanyName,
 		"person": user.Role,
 		"token":  token,
 		"photo":  user.Photo,
